@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Immutable matching release tag (publication requires owner approval)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    uses: Flow-Steward/extensions/.github/workflows/release-extension.yml@cdccb3c6965d185f42050e893f715d7385d744cc
+    with:
+      tag: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}

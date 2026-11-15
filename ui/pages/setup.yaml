@@ -1,0 +1,9 @@
+{
+  "page_id": "setup",
+  "title": "LinkedIn Publisher setup",
+  "components": [
+    {
+      "ref": "../components/setup.yaml"
+    }
+  ]
+}

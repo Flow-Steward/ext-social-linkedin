@@ -1,0 +1,83 @@
+{
+  "connection_types": [
+    {
+      "connection_type_id": "linkedin_member",
+      "display_name": "LinkedIn member",
+      "auth": {
+        "type": "oauth2",
+        "provider_id": "linkedin_member_oauth",
+        "scopes": {
+          "required": [
+            "openid",
+            "profile",
+            "w_member_social"
+          ],
+          "optional": []
+        }
+      },
+      "config_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "secret_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        }
+      },
+      "capabilities": [
+        "test_connection",
+        "upload_image",
+        "publish_post"
+      ]
+    },
+    {
+      "connection_type_id": "linkedin_page",
+      "display_name": "LinkedIn page",
+      "auth": {
+        "type": "oauth2",
+        "provider_id": "linkedin_page_oauth",
+        "scopes": {
+          "required": [
+            "w_organization_social"
+          ],
+          "optional": []
+        }
+      },
+      "config_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_urn"
+        ],
+        "properties": {
+          "organization_urn": {
+            "type": "string",
+            "minLength": 21,
+            "maxLength": 100,
+            "title": "Organization URN",
+            "description": "Enter urn:li:organization:<numeric ID>. Page role is checked by LinkedIn when publishing."
+          }
+        }
+      },
+      "secret_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        }
+      },
+      "capabilities": [
+        "test_connection",
+        "upload_image",
+        "publish_post"
+      ]
+    }
+  ]
+}

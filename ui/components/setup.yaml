@@ -1,0 +1,6 @@
+{
+  "component_id": "linkedin_setup",
+  "type": "markdown",
+  "title": "Connect LinkedIn",
+  "content": "Create project OAuth app configurations and member or Page connections. Member needs openid, profile, w_member_social. Page needs w_organization_social and a configured organization URN. Bind the connection explicitly in each workflow step. See the bundled README.md for setup and limits. Page role/product access is unverified until LinkedIn accepts a publication. This independent integration is not an official LinkedIn product or endorsement."
+}

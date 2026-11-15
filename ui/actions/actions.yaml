@@ -1,0 +1,211 @@
+{
+  "actions": [
+    {
+      "action_id": "validate_post",
+      "title": "Validate LinkedIn post",
+      "required_scopes": [
+        "extension:invoke"
+      ],
+      "handler": {
+        "mode": "extension"
+      },
+      "mutates_platform": false,
+      "workflow_visible": true,
+      "parameters": [
+        {
+          "name": "post",
+          "type": "object",
+          "required": true
+        }
+      ],
+      "result_fields": [
+        "valid",
+        "violations",
+        "limits"
+      ],
+      "error_codes": [
+        "invalid_payload",
+        "invalid_host_envelope",
+        "invalid_connection",
+        "authorization_required",
+        "insufficient_access",
+        "rate_limited",
+        "provider_unavailable",
+        "network_failure",
+        "response_too_large",
+        "timeout_unknown",
+        "artifact_input_unavailable",
+        "invalid_image",
+        "internal_error"
+      ]
+    },
+    {
+      "action_id": "upload_image",
+      "title": "Upload LinkedIn image",
+      "required_scopes": [
+        "extension:invoke",
+        "artifact:read"
+      ],
+      "handler": {
+        "mode": "extension"
+      },
+      "mutates_platform": true,
+      "workflow_visible": true,
+      "parameters": [
+        {
+          "name": "connection_ref",
+          "type": "connection_ref",
+          "required": true
+        },
+        {
+          "name": "artifact_handle",
+          "type": "artifact_handle",
+          "required": true
+        }
+      ],
+      "result_fields": [
+        "image_urn",
+        "author_urn",
+        "status"
+      ],
+      "error_codes": [
+        "invalid_payload",
+        "invalid_host_envelope",
+        "invalid_connection",
+        "authorization_required",
+        "insufficient_access",
+        "rate_limited",
+        "provider_unavailable",
+        "network_failure",
+        "response_too_large",
+        "timeout_unknown",
+        "artifact_input_unavailable",
+        "invalid_image",
+        "internal_error"
+      ],
+      "test_mode_behavior": "suppress",
+      "command_type": "invoke_extension_action"
+    },
+    {
+      "action_id": "publish_post",
+      "title": "Publish LinkedIn post",
+      "required_scopes": [
+        "extension:invoke"
+      ],
+      "handler": {
+        "mode": "extension"
+      },
+      "mutates_platform": true,
+      "workflow_visible": true,
+      "parameters": [
+        {
+          "name": "connection_ref",
+          "type": "connection_ref",
+          "required": true
+        },
+        {
+          "name": "post",
+          "type": "object",
+          "required": true
+        }
+      ],
+      "result_fields": [
+        "post_urn",
+        "post_url",
+        "author_urn",
+        "status",
+        "api_version"
+      ],
+      "error_codes": [
+        "invalid_payload",
+        "invalid_host_envelope",
+        "invalid_connection",
+        "authorization_required",
+        "insufficient_access",
+        "rate_limited",
+        "provider_unavailable",
+        "network_failure",
+        "response_too_large",
+        "timeout_unknown",
+        "artifact_input_unavailable",
+        "invalid_image",
+        "internal_error"
+      ],
+      "test_mode_behavior": "suppress",
+      "command_type": "invoke_extension_action"
+    },
+    {
+      "action_id": "test_connection",
+      "title": "Test LinkedIn connection",
+      "required_scopes": [
+        "extension:invoke"
+      ],
+      "handler": {
+        "mode": "extension"
+      },
+      "mutates_platform": false,
+      "workflow_visible": true,
+      "parameters": [
+        {
+          "name": "connection_ref",
+          "type": "connection_ref",
+          "required": true
+        }
+      ],
+      "result_fields": [
+        "author_urn",
+        "connection_type",
+        "authorization"
+      ],
+      "error_codes": [
+        "invalid_payload",
+        "invalid_host_envelope",
+        "invalid_connection",
+        "authorization_required",
+        "insufficient_access",
+        "rate_limited",
+        "provider_unavailable",
+        "network_failure",
+        "response_too_large",
+        "timeout_unknown",
+        "artifact_input_unavailable",
+        "invalid_image",
+        "internal_error"
+      ]
+    },
+    {
+      "action_id": "verify_member_identity",
+      "title": "Verify LinkedIn member identity",
+      "required_scopes": [
+        "extension:invoke"
+      ],
+      "handler": {
+        "mode": "extension"
+      },
+      "mutates_platform": false,
+      "workflow_visible": false,
+      "parameters": [],
+      "result_fields": [
+        "subject",
+        "verified_display_name",
+        "safe_metadata",
+        "health"
+      ],
+      "error_codes": [
+        "invalid_payload",
+        "invalid_host_envelope",
+        "invalid_connection",
+        "authorization_required",
+        "insufficient_access",
+        "rate_limited",
+        "provider_unavailable",
+        "network_failure",
+        "response_too_large",
+        "timeout_unknown",
+        "artifact_input_unavailable",
+        "invalid_image",
+        "internal_error"
+      ]
+    }
+  ]
+}

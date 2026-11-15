@@ -1,0 +1,169 @@
+{
+  "version": "1.0.0",
+  "enabled": false,
+  "trigger": {
+    "confidence_threshold": 0.0
+  },
+  "groups": [],
+  "for_each": [],
+  "workflow_id": "linkedin_publish_image",
+  "display_name": "Linkedin Publish Image",
+  "description": "Select the installed LinkedIn extension and project connection in the builder before enabling. Uses prepared input from any source.",
+  "settings": {
+    "execution_graph": {
+      "schema_version": 1,
+      "entry": {
+        "kind": "step",
+        "id": "upload"
+      },
+      "edges": [
+        {
+          "source": {
+            "kind": "step",
+            "id": "upload"
+          },
+          "outcome": {
+            "name": "success"
+          },
+          "target": {
+            "kind": "step",
+            "id": "compose"
+          },
+          "rework": false
+        },
+        {
+          "source": {
+            "kind": "step",
+            "id": "compose"
+          },
+          "outcome": {
+            "name": "success"
+          },
+          "target": {
+            "kind": "step",
+            "id": "publish"
+          },
+          "rework": false
+        },
+        {
+          "source": {
+            "kind": "step",
+            "id": "publish"
+          },
+          "outcome": {
+            "name": "success"
+          },
+          "target": {
+            "kind": "step",
+            "id": "finish"
+          },
+          "rework": false
+        }
+      ]
+    },
+    "callable": {
+      "enabled": true,
+      "trigger_channels": [
+        "ui",
+        "api",
+        "mcp",
+        "webhook"
+      ],
+      "input_mode": "fields",
+      "strict_inputs": true,
+      "expected_inputs": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "image_artifact",
+          "type": "string",
+          "required": true
+        }
+      ],
+      "output_mode": "variables",
+      "expected_outputs": [
+        {
+          "name": "linkedin_receipt",
+          "type": "object",
+          "required": false
+        }
+      ],
+      "expected_artifacts": [],
+      "allow_empty_inputs": false,
+      "side_effects": [
+        "Publish one public LinkedIn post as the explicitly selected connection."
+      ]
+    }
+  },
+  "steps": [
+    {
+      "step_id": "upload",
+      "display_name": "Upload Image",
+      "step_kind": "connector",
+      "connector_id": "linkedin.upload_image",
+      "connection_binding_jsonb": {},
+      "override": {
+        "connector": {
+          "extension_id": "flowsteward.linkedin",
+          "action_id": "upload_image"
+        }
+      },
+      "input_mapping_jsonb": {
+        "artifact_handle": "state.inputs.image_artifact"
+      },
+      "output_mapping_jsonb": {
+        "result": "state.linkedin_image"
+      }
+    },
+    {
+      "step_id": "compose",
+      "display_name": "Assemble image post",
+      "step_kind": "set_variable",
+      "override": {
+        "set_variable": {
+          "assignments": {
+            "state.linkedin_post.kind": "image",
+            "state.linkedin_post.text": {
+              "source": "state.inputs.text"
+            },
+            "state.linkedin_post.image_urn": {
+              "source": "state.linkedin_image.image_urn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "step_id": "publish",
+      "display_name": "Publish Post",
+      "step_kind": "connector",
+      "connector_id": "linkedin.publish_post",
+      "connection_binding_jsonb": {},
+      "override": {
+        "connector": {
+          "extension_id": "flowsteward.linkedin",
+          "action_id": "publish_post"
+        }
+      },
+      "input_mapping_jsonb": {
+        "post": "state.linkedin_post"
+      },
+      "output_mapping_jsonb": {
+        "result": "state.linkedin_receipt"
+      }
+    },
+    {
+      "step_id": "finish",
+      "display_name": "Finish publication",
+      "step_kind": "stop_success",
+      "override": {
+        "stop_success": {
+          "message": "LinkedIn workflow finished. Inspect the operation status and receipt."
+        }
+      }
+    }
+  ]
+}

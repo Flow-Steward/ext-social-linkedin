@@ -1,0 +1,261 @@
+{
+  "manifest_version": 2,
+  "extension_id": "flowsteward.linkedin",
+  "kind": "tool_provider",
+  "version": "1.0.0",
+  "display_name": "LinkedIn Publisher",
+  "description": "Publish prepared text, image posts and article links to LinkedIn from workflows, using a member profile or company Page.",
+  "vendor": {
+    "name": "Flow Steward"
+  },
+  "listing": {
+    "category": "marketing",
+    "tags": [
+      "linkedin",
+      "publishing",
+      "marketing"
+    ],
+    "summary": "Publish prepared text, image posts and article links to LinkedIn from workflows, using a member profile or company Page.",
+    "description": "LinkedIn Publisher connects Flow Steward workflows to LinkedIn organic publishing. Publish public text posts, posts with one JPEG or PNG image, and link cards for articles hosted on your own website. Choose an authenticated member profile or one explicitly configured company Page per connection.\n\nUse validate_post to check prepared content against local limits, upload_image to upload an authorized Flow Steward artifact, publish_post to submit the post, and test_connection to inspect redacted connection status. Successful publication returns a LinkedIn post ID, URL, author and API version. Release announcements, tutorials and blog updates can arrive from a webhook or another workflow step; no WordPress or AI-provider dependency is required.\n\nBring your own LinkedIn developer app, register the HTTPS OAuth redirect shown by Flow Steward, and create project-owned member or Page connections. Member publishing needs the LinkedIn sharing and OpenID Connect products. Page publishing needs Community Management access, an eligible Page role and a manually entered organization URN. Bind each connection explicitly in the workflow. Use separate bound steps to publish as both authors; there is no Page-discovery picker.\n\nContent must already be prepared. Local policy limits text to 3,000 UTF-16 code units and images to 8 MiB; images are not resized or cropped. Article links are link cards, not native LinkedIn articles. Comments, replies, private posts, video, documents, multiple images, editing, deletion, analytics and inbound LinkedIn events are not supported. Test mode suppresses uploads and posts. Rate limits and uncertain write outcomes use the existing workflow and effect-resolution controls; there are no automatic provider retries or status polls. An accepted receipt does not guarantee immediate visibility or completed image processing.\n\nThis independent integration is not endorsed by LinkedIn. Live OAuth, Page access and live publication have not been verified in this release preparation.",
+    "setup_summary": "Register Flow Steward’s HTTPS OAuth redirect in your LinkedIn developer app, then create and bind project member or Page connections. Pages need Community Management access, an eligible role and an organization URN."
+  },
+  "lifecycle": {
+    "data_schema_version": 1,
+    "data_migrations": []
+  },
+  "features": [
+    "tool",
+    "action",
+    "artifact_bundle"
+  ],
+  "required_scopes": [
+    "extension:invoke",
+    "artifact:read"
+  ],
+  "account_scope": {
+    "scope_type": "project",
+    "description": "Explicit project-scoped publication connections."
+  },
+  "schemas": {
+    "config": "schemas/config.schema.yaml",
+    "secrets": "schemas/secrets.schema.yaml",
+    "subscriptions": "schemas/subscriptions.schema.yaml",
+    "input": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "result": {
+          "type": "object"
+        },
+        "errors": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "ok"
+      ]
+    }
+  },
+  "entrypoint": {
+    "mode": "subprocess",
+    "command": [
+      "python3",
+      "main.py"
+    ],
+    "timeout_seconds": 90
+  },
+  "health": {
+    "command": [
+      "python3",
+      "health.py"
+    ],
+    "timeout_seconds": 5
+  },
+  "ui_manifest": "ui/ui_manifest.yaml",
+  "action_manifest": "ui/actions/actions.yaml",
+  "query_manifest": "ui/queries/queries.yaml",
+  "runtime": {
+    "contract_version": "extension_host_v2",
+    "extension_contract_v2": {
+      "oauth_providers": [
+        {
+          "provider_id": "linkedin_member_oauth",
+          "display_name": "LinkedIn member",
+          "setup_page_id": "setup",
+          "help_page_id": "setup",
+          "flow": {
+            "type": "authorization_code",
+            "pkce": "none"
+          },
+          "credential_fields": [
+            {
+              "field_id": "client_id",
+              "value_type": "text",
+              "required": true,
+              "secret": false,
+              "browser_exposable": true,
+              "change_policy": "reauthorization_required",
+              "label": "LinkedIn Client ID",
+              "validation": {
+                "min_length": 1,
+                "max_length": 512
+              },
+              "help_text": "Copy this value from the LinkedIn Developer Portal app Auth tab.",
+              "autocomplete": "username"
+            },
+            {
+              "field_id": "client_secret",
+              "value_type": "secret",
+              "required": true,
+              "secret": true,
+              "change_policy": "runtime_revalidate",
+              "label": "LinkedIn Client Secret",
+              "validation": {
+                "min_length": 1,
+                "max_length": 4096
+              },
+              "help_text": "Copy this value from the LinkedIn Developer Portal app Auth tab.",
+              "autocomplete": "current-password"
+            }
+          ],
+          "authorization_endpoint": {
+            "url": "https://www.linkedin.com/oauth/v2/authorization"
+          },
+          "token_endpoint": {
+            "url": "https://www.linkedin.com/oauth/v2/accessToken",
+            "client_auth_method": "client_secret_post"
+          },
+          "callback_id": "oauth_authorization",
+          "authorization_intents": [
+            {
+              "intent_id": "connect",
+              "static_parameters": {}
+            }
+          ],
+          "code_exchange": {
+            "implicit_token_type": "bearer"
+          },
+          "post_connect_action_id": "verify_member_identity",
+          "description": "Project-owned LinkedIn authorization for LinkedIn member."
+        },
+        {
+          "provider_id": "linkedin_page_oauth",
+          "display_name": "LinkedIn page",
+          "setup_page_id": "setup",
+          "help_page_id": "setup",
+          "flow": {
+            "type": "authorization_code",
+            "pkce": "none"
+          },
+          "credential_fields": [
+            {
+              "field_id": "client_id",
+              "value_type": "text",
+              "required": true,
+              "secret": false,
+              "browser_exposable": true,
+              "change_policy": "reauthorization_required",
+              "label": "LinkedIn Client ID",
+              "validation": {
+                "min_length": 1,
+                "max_length": 512
+              },
+              "help_text": "Copy this value from the LinkedIn Developer Portal app Auth tab.",
+              "autocomplete": "username"
+            },
+            {
+              "field_id": "client_secret",
+              "value_type": "secret",
+              "required": true,
+              "secret": true,
+              "change_policy": "runtime_revalidate",
+              "label": "LinkedIn Client Secret",
+              "validation": {
+                "min_length": 1,
+                "max_length": 4096
+              },
+              "help_text": "Copy this value from the LinkedIn Developer Portal app Auth tab.",
+              "autocomplete": "current-password"
+            }
+          ],
+          "authorization_endpoint": {
+            "url": "https://www.linkedin.com/oauth/v2/authorization"
+          },
+          "token_endpoint": {
+            "url": "https://www.linkedin.com/oauth/v2/accessToken",
+            "client_auth_method": "client_secret_post"
+          },
+          "callback_id": "oauth_authorization",
+          "authorization_intents": [
+            {
+              "intent_id": "connect",
+              "static_parameters": {}
+            }
+          ],
+          "code_exchange": {
+            "implicit_token_type": "bearer"
+          },
+          "description": "Project-owned LinkedIn authorization for LinkedIn page."
+        }
+      ],
+      "connection_types": "contracts/connection_types.yaml",
+      "operation_manifest": "contracts/operation_manifest.yaml",
+      "step_ui_manifest": "contracts/step_ui_manifest.yaml",
+      "resource_query_manifest": "contracts/resource_queries.yaml",
+      "artifact_policies": "contracts/artifact_policies.yaml"
+    }
+  },
+  "callbacks": [
+    {
+      "callback_id": "oauth_authorization",
+      "purpose": "oauth_authorization",
+      "methods": [
+        "GET"
+      ],
+      "connection_scoped": false
+    }
+  ],
+  "egress": {
+    "hosts": [
+      "api.linkedin.com",
+      "www.linkedin.com"
+    ]
+  },
+  "external_effects": [
+    {
+      "operation_id": "upload_image",
+      "effect_kind": "media_upload",
+      "channel": "linkedin",
+      "idempotency": "required",
+      "test_mode_behavior": "suppress"
+    },
+    {
+      "operation_id": "publish_post",
+      "effect_kind": "social_post_create",
+      "channel": "linkedin",
+      "idempotency": "required",
+      "test_mode_behavior": "suppress"
+    }
+  ],
+  "python_requirements": [],
+  "machine_auth": {
+    "service_account_key": "svc_ext_linkedin",
+    "required_scopes": [
+      "extension:invoke",
+      "artifact:read"
+    ]
+  }
+}

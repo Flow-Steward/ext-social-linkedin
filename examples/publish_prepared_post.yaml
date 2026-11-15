@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "enabled": false,
+  "trigger": {
+    "confidence_threshold": 0.0
+  },
+  "groups": [],
+  "for_each": [],
+  "workflow_id": "linkedin_publish_prepared_post",
+  "display_name": "Linkedin Publish Prepared Post",
+  "description": "Select the installed LinkedIn extension and project connection in the builder before enabling. Uses prepared input from any source.",
+  "settings": {
+    "execution_graph": {
+      "schema_version": 1,
+      "entry": {
+        "kind": "step",
+        "id": "publish"
+      },
+      "edges": [
+        {
+          "source": {
+            "kind": "step",
+            "id": "publish"
+          },
+          "outcome": {
+            "name": "success"
+          },
+          "target": {
+            "kind": "step",
+            "id": "finish"
+          },
+          "rework": false
+        }
+      ]
+    },
+    "callable": {
+      "enabled": true,
+      "trigger_channels": [
+        "ui",
+        "api",
+        "mcp",
+        "webhook"
+      ],
+      "input_mode": "fields",
+      "strict_inputs": true,
+      "expected_inputs": [
+        {
+          "name": "post",
+          "type": "object",
+          "required": true
+        }
+      ],
+      "output_mode": "variables",
+      "expected_outputs": [
+        {
+          "name": "linkedin_receipt",
+          "type": "object",
+          "required": false
+        }
+      ],
+      "expected_artifacts": [],
+      "allow_empty_inputs": false,
+      "side_effects": [
+        "Publish one public LinkedIn post as the explicitly selected connection."
+      ]
+    }
+  },
+  "steps": [
+    {
+      "step_id": "publish",
+      "display_name": "Publish Post",
+      "step_kind": "connector",
+      "connector_id": "linkedin.publish_post",
+      "connection_binding_jsonb": {},
+      "override": {
+        "connector": {
+          "extension_id": "flowsteward.linkedin",
+          "action_id": "publish_post"
+        }
+      },
+      "input_mapping_jsonb": {
+        "post": "state.inputs.post"
+      },
+      "output_mapping_jsonb": {
+        "result": "state.linkedin_receipt"
+      }
+    },
+    {
+      "step_id": "finish",
+      "display_name": "Finish publication",
+      "step_kind": "stop_success",
+      "override": {
+        "stop_success": {
+          "message": "LinkedIn workflow finished. Inspect the operation status and receipt."
+        }
+      }
+    }
+  ]
+}

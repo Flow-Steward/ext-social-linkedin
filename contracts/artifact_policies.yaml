@@ -1,0 +1,16 @@
+{
+  "artifact_policies": [
+    {
+      "operation_id": "upload_image",
+      "inputs": [
+        {
+          "kind": "artifact",
+          "value_type": "artifact_handle",
+          "binding_key": "linkedin_image",
+          "from_input": "artifact_handle",
+          "max_size_bytes": 8388608
+        }
+      ]
+    }
+  ]
+}

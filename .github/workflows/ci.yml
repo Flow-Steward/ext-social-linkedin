@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: Flow-Steward/extensions/.github/workflows/build-extension.yml@cdccb3c6965d185f42050e893f715d7385d744cc

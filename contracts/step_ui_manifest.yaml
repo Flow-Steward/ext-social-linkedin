@@ -1,0 +1,42 @@
+{
+  "forms": [
+    {
+      "operation_id": "validate_post",
+      "title": "Validate LinkedIn post",
+      "fields": [
+        {
+          "name": "post",
+          "widget_type": "json",
+          "required": true
+        }
+      ]
+    },
+    {
+      "operation_id": "upload_image",
+      "title": "Upload LinkedIn image",
+      "fields": [
+        {
+          "name": "artifact_handle",
+          "widget_type": "artifact_picker",
+          "required": true
+        }
+      ]
+    },
+    {
+      "operation_id": "publish_post",
+      "title": "Publish LinkedIn post",
+      "fields": [
+        {
+          "name": "post",
+          "widget_type": "json",
+          "required": true
+        }
+      ]
+    },
+    {
+      "operation_id": "test_connection",
+      "title": "Test LinkedIn connection",
+      "fields": []
+    }
+  ]
+}
