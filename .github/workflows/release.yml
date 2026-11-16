@@ -20,4 +20,4 @@ jobs:
     uses: Flow-Steward/extensions/.github/workflows/release-extension.yml@296fa16dfec746f80c26bc05663ed9832c2043c2
     with:
       tag: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
-      expected_visibility: private
+      expected_visibility: public

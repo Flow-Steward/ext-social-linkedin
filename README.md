@@ -170,13 +170,11 @@ LinkedIn messaging, recruiting or CRM operations. The Marketplace machine-auth
 metadata mirrors the existing `extension:invoke` and `artifact:read` scopes; it
 does not create a service account, issue credentials or grant new permissions.
 
-`icon.png` uses Flow Steward’s own mark to identify this independently maintained
-connector. Its source and final hashes are recorded in `BRANDING.md`. The same
-neutral icon can be used in the platform catalog and external promotional card
-without presenting it as official LinkedIn artwork. An optional official LinkedIn
-artwork variant is retained separately in the release owner’s preparation
-evidence, outside this source and runtime archives; its external promotional
-use still requires the provider’s approval.
+Since version 1.0.1, `icon.png` uses an original blue professional-profile and
+connections illustration made for this integration. The same custom artwork
+identifies it in the platform catalog and on flowsteward.org. Its generation,
+resizing, final hash and visual review are recorded in `BRANDING.md`. It is not
+the official LinkedIn logo and does not imply LinkedIn endorsement.
 
 For release maintainers, the repository target is
 `Flow-Steward/ext-social-linkedin`; verify that it exists before publishing.
