@@ -1,7 +1,7 @@
 {
   "schema_version": "extension_descriptor_v1",
   "extension_id": "flowsteward.linkedin",
-  "release_version": "1.0.2",
+  "release_version": "1.0.3",
   "extension_type": "service_extension",
   "lifecycle": {
     "data_schema_version": 1,
@@ -17,7 +17,8 @@
     ]
   },
   "vendor": {
-    "vendor_name": "Flow Steward"
+    "vendor_name": "Flow Steward",
+    "support_url": "https://github.com/Flow-Steward/ext-social-linkedin/issues"
   },
   "listing": {
     "visibility": "public_reference",

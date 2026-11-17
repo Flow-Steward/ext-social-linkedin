@@ -198,3 +198,11 @@ registration/data handoff; do not edit generated `index.json` or release records
 - https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/little-text-format
 - https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow
 - https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2
+
+## Support
+
+Open the extension’s **Support** tab to report a problem or request a feature in
+the [public issue tracker](https://github.com/Flow-Steward/ext-social-linkedin/issues).
+Include the extension and Flow Steward versions, expected and actual behavior,
+the exact error, workflow or action, and the time. Review diagnostics before
+sharing; never post secrets or customer data in public issues.
