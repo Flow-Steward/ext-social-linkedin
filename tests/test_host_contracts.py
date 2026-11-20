@@ -31,6 +31,39 @@ def test_distribution_descriptor_is_accepted_by_actual_host(monkeypatch):
     assert all(entry["publish"] is False for entry in descriptor["artifacts"]["workflows"])
 
 
+def test_catalog_install_validation_inherits_the_bundle_oauth_contract(monkeypatch):
+    """Install validates the descriptor file with its bundle, not the bare dict.
+
+    1.0.0 to 1.0.3 passed the dict check above but failed catalog install with
+    "Descriptor validation failed": the descriptor declared its own
+    extension_contract_v2 without oauth_providers, so the OAuth providers and
+    callback declared only in extension.yaml were never inherited.
+    """
+    monkeypatch.syspath_prepend("/app")
+    from core.application.extensions.descriptor_bundle_runtime import (
+        descriptor_with_bundle_runtime,
+    )
+    from core.application.extensions.lifecycle import validate_extension_descriptor_file
+
+    path = ROOT / "extension-descriptor.yaml"
+    result = validate_extension_descriptor_file(path)
+    assert result["valid"] is True, result["errors"]
+    merged, errors = descriptor_with_bundle_runtime(
+        descriptor_path=path, normalized_descriptor=result["normalized"]
+    )
+    assert errors == []
+    providers = {row["provider_id"] for row in merged["oauth_providers"]}
+    assert providers == {"linkedin_member_oauth", "linkedin_page_oauth"}
+    assert {row["auth"]["provider_id"] for row in merged["connection_types"]} == providers
+    assert {row["callback_id"] for row in merged["callbacks"]} == {"oauth_authorization"}
+    assert {row["operation_id"] for row in merged["operation_manifest"]} == {
+        "validate_post",
+        "upload_image",
+        "publish_post",
+        "test_connection",
+    }
+
+
 @pytest.mark.parametrize("name", ["publish_prepared_post.yaml", "publish_image.yaml"])
 def test_workflow_example_has_valid_native_graph(monkeypatch, name):
     monkeypatch.syspath_prepend("/app")
