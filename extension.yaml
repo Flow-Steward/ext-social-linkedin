@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "extension_id": "flowsteward.linkedin",
   "kind": "tool_provider",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "display_name": "LinkedIn Publisher",
   "description": "Publish prepared text, image posts and article links to LinkedIn from workflows, using a member profile or company Page.",
   "vendor": {
