@@ -41,7 +41,7 @@
   "runtime": {
     "contract_version": "extension_host_v2",
     "compatibility": {
-      "platform_min": "1.0.0"
+      "platform_min": "1.9.0"
     }
   },
   "artifacts": {

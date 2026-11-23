@@ -1,0 +1,28 @@
+{
+  "page_id": "page_author",
+  "title": "Page author",
+  "project_scoped": true,
+  "connection": {"connection_type_ids": ["linkedin_page"]},
+  "components": [
+    {
+      "component_id": "linkedin_page_author",
+      "type": "form",
+      "title": "Set publishing author",
+      "description": "Enter the organization URN for the selected connection. Create another connection to publish as a different Page. LinkedIn checks Page permissions when publishing.",
+      "data": {"save_action": "bind_page"},
+      "ui_schema": {
+        "fields": [
+          {
+            "field_id": "organization_urn",
+            "path": "organization_urn",
+            "label": "Organization URN",
+            "widget": "text",
+            "placeholder": "urn:li:organization:123",
+            "required": true
+          }
+        ],
+        "actions": {"save_label": "Save Page author"}
+      }
+    }
+  ]
+}

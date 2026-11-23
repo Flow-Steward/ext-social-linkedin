@@ -102,6 +102,42 @@ def test_each_oauth_provider_can_start_from_its_setup_page(monkeypatch):
         ), provider["provider_id"]
 
 
+def test_page_author_can_be_bound_from_the_existing_host_form(monkeypatch):
+    monkeypatch.syspath_prepend("/app")
+    from core.application.extensions.browser_manifest_projection import project_browser_manifest
+    from core.application.extensions.descriptor_bundle_runtime import descriptor_with_bundle_runtime
+    from core.application.extensions.lifecycle import validate_extension_descriptor_file
+    from core.application.extensions.runtime_host_grants import trusted_mutation_grant
+    from core.infrastructure.extension_runtime.extension_runtime_compile import (
+        compile_extension_bundle,
+    )
+
+    path = ROOT / "extension-descriptor.yaml"
+    descriptor = validate_extension_descriptor_file(path)
+    assert descriptor["valid"], descriptor["errors"]
+    merged, errors = descriptor_with_bundle_runtime(
+        descriptor_path=path, normalized_descriptor=descriptor["normalized"]
+    )
+    assert not errors
+    manifest = project_browser_manifest(merged)
+    page = next(row for row in manifest["ui_manifest"]["pages"] if row["page_id"] == "page_author")
+    assert page["connection"]["connection_type_ids"] == ["linkedin_page"]
+    form = page["components"][0]
+    assert form["type"] == "form"
+    assert form["ui_schema"]["fields"][0]["path"] == "organization_urn"
+    action = next(
+        row
+        for row in manifest["action_definitions"]
+        if row["action_id"] == form["data"]["save_action"]
+    )
+    assert {row["name"] for row in action["parameters"]} == {"connection_ref", "organization_urn"}
+    compiled = compile_extension_bundle(ROOT, logical_bundle_dir_name="flowsteward_linkedin")
+    assert compiled["status"] == "valid", compiled
+    grant = trusted_mutation_grant(compiled, "project_connection_config_compare_and_set")
+    assert grant is not None
+    assert grant["connection_type_ids"] == ["linkedin_page"]
+
+
 @pytest.mark.parametrize("name", ["publish_prepared_post.yaml", "publish_image.yaml"])
 def test_workflow_example_has_valid_native_graph(monkeypatch, name):
     monkeypatch.syspath_prepend("/app")

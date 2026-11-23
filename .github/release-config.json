@@ -10,6 +10,7 @@
   "test_paths": [
     "tests/test_validation.py",
     "tests/test_images.py",
+    "tests/test_page_binding.py",
     "tests/test_runtime.py",
     "tests/test_subprocess.py",
     "tests/test_support.py"

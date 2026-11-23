@@ -60,7 +60,7 @@ def test_support_is_registered_for_manifest_and_descriptor_import():
 @pytest.mark.skipif(not Path("/app/core").is_dir(), reason="requires fs-audit host")
 def test_actual_descriptor_import_keeps_support_and_runtime_contracts(monkeypatch):
     monkeypatch.syspath_prepend("/app")
-    from core.application.extensions.command_core import _descriptor_with_bundle_runtime
+    from core.application.extensions.descriptor_bundle_runtime import descriptor_with_bundle_runtime
     from core.infrastructure.extension_runtime.extension_runtime_entrypoints import (
         normalize_extension_row_for_runtime,
     )
@@ -69,7 +69,7 @@ def test_actual_descriptor_import_keeps_support_and_runtime_contracts(monkeypatc
     )
 
     descriptor = load(ROOT / "extension-descriptor.yaml")
-    imported, errors = _descriptor_with_bundle_runtime(
+    imported, errors = descriptor_with_bundle_runtime(
         descriptor_path=ROOT / "extension-descriptor.yaml",
         normalized_descriptor=descriptor,
     )

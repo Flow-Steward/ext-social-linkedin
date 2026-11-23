@@ -6,7 +6,7 @@ from typing import Any
 
 from flowsteward_extension_sdk import runtime_context_from_payload
 
-from linkedin.connection import access_token, resolve_connection, subject
+from linkedin.connection import access_token, bind_page, resolve_connection, subject
 from linkedin.errors import LinkedInError, failure, success
 from linkedin.transport import LinkedInClient
 from linkedin.validation import API_VERSION, provider_post, safe_text, validate_post
@@ -18,6 +18,7 @@ INPUTS = {
     "upload_image": {"connection_ref", "artifact_handle"},
     "test_connection": {"connection_ref"},
     "verify_member_identity": set(),
+    "bind_page": {"connection_ref", "organization_urn"},
 }
 
 
@@ -45,6 +46,8 @@ def dispatch(payload: dict[str, Any]) -> dict[str, Any]:
             raise LinkedInError("invalid_payload", "Test mode must be boolean")
         if operation == "validate_post":
             return success(validate_post(inputs["post"]))
+        if operation == "bind_page":
+            return bind_page(payload, inputs, test_mode=test_mode)
         if operation == "verify_member_identity":
             target = action.get("target", {})
             connection = target.get("connection", {}) if isinstance(target, dict) else {}

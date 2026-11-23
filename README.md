@@ -9,8 +9,8 @@ come from a webhook, CMS, release workflow or an upstream content-preparation
 step; the extension does not require WordPress or a particular AI provider.
 
 This is an independent integration, not a LinkedIn product or endorsement.
-It requires `extension_host_v2`, public SDK 0.4.0 or later, and a Core host with
-the OAuth reconnect identity-preservation fix included in the 0.9.18 candidate.
+It requires `extension_host_v2`, extension-host API 1.9.0 or later for saving
+the Page author, and public SDK 0.4.0 or later.
 Host compatibility was checked on Core 29bbe748; standalone CI tests are mocked.
 No live OAuth, Page authorization or LinkedIn publication has been verified.
 
@@ -29,10 +29,10 @@ see [BRANDING.md](BRANDING.md).
    using OpenID Connect**. Consent to `openid profile w_member_social`. The member
    identity is read from LinkedIn UserInfo and stored by the host.
 4. For a Page connection, use an app approved for **Community Management** with
-   `w_organization_social`. Enter `urn:li:organization:<numeric ID>` as the
-   organization URN and authorize a member with an eligible Page role. The setup
-   check does not prove Page-role or API-product authorization; LinkedIn checks it
-   when publishing. There is no Page-discovery picker.
+   `w_organization_social`. Authorize a member with an eligible Page role. Open
+   **Page author**, select the connection and save `urn:li:organization:<numeric ID>`.
+   Create another connection to publish as a different Page. LinkedIn checks
+   Page-role and API-product authorization when publishing.
 5. Bind the selected project connection explicitly to each Extension tools step.
    Input cannot override the publishing author. To publish as both authors, use
    two separately bound steps and the ordinary workflow error policy. A failure
@@ -178,8 +178,8 @@ the official LinkedIn logo and does not imply LinkedIn endorsement.
 
 For release maintainers, the repository target is
 `Flow-Steward/ext-social-linkedin`; verify that it exists before publishing.
-`.github/release-config.json` selects only the four standalone mocked test files
-and a portable package.
+`.github/release-config.json` selects the standalone checks for the portable
+package, including Page author binding.
 The workflow callers pin the maintained catalog release tooling to an immutable
 commit. The CI build has read-only repository permissions; only the release
 publisher receives Contents write permission. Repository creation, source and

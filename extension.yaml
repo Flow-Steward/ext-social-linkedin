@@ -87,6 +87,13 @@
   },
   "ui_manifest": "ui/ui_manifest.yaml",
   "action_manifest": "ui/actions/actions.yaml",
+  "runtime_grants": {
+    "mutations": {
+      "project_connection_config_compare_and_set": {
+        "connection_type_ids": ["linkedin_page"]
+      }
+    }
+  },
   "query_manifest": "ui/queries/queries.yaml",
   "runtime": {
     "contract_version": "extension_host_v2",

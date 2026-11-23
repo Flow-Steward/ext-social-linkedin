@@ -6,7 +6,9 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from linkedin.errors import LinkedInError
+from flowsteward_extension_sdk import host_mutation
+
+from linkedin.errors import LinkedInError, success
 
 SUBJECT = re.compile(r"[A-Za-z0-9_-]{1,256}\Z")
 ORGANIZATION = re.compile(r"urn:li:organization:[1-9][0-9]{0,30}\Z")
@@ -45,7 +47,7 @@ class Connection:
         return access_token(self.target)
 
 
-def resolve_connection(payload: dict[str, Any], inputs: dict[str, Any]) -> Connection:
+def _selected_connection(payload: dict[str, Any], inputs: dict[str, Any]) -> dict[str, Any]:
     action = payload.get("action", {})
     target = action.get("target", {}) if isinstance(action, dict) else {}
     connection = target.get("connection") if isinstance(target, dict) else None
@@ -63,6 +65,47 @@ def resolve_connection(payload: dict[str, Any], inputs: dict[str, Any]) -> Conne
         "connection_id"
     ):
         raise LinkedInError("invalid_connection", "Input must reference the selected connection")
+    return connection
+
+
+def bind_page(
+    payload: dict[str, Any], inputs: dict[str, Any], *, test_mode: bool
+) -> dict[str, Any]:
+    urn = inputs["organization_urn"]
+    if not isinstance(urn, str) or ORGANIZATION.fullmatch(urn) is None:
+        raise LinkedInError("invalid_payload", "Enter urn:li:organization:<numeric ID>")
+    connection = _selected_connection(payload, inputs)
+    if connection.get("connection_type") != "linkedin_page":
+        raise LinkedInError("invalid_connection", "Select a LinkedIn Page connection")
+    config = connection.get("config")
+    if not isinstance(config, dict):
+        raise LinkedInError("authorization_required", "Authorize the LinkedIn Page connection")
+    oauth = config.get("oauth")
+    if not isinstance(oauth, dict) or oauth.get("lifecycle_status") != "connected":
+        raise LinkedInError("authorization_required", "Authorize the LinkedIn Page connection")
+    access_token(connection)
+    if "organization_urn" in config and config["organization_urn"] != urn:
+        raise LinkedInError(
+            "invalid_connection", "Create another connection to publish as a different Page"
+        )
+    if test_mode:
+        return success({"test_mode_status": "suppressed"})
+    response = success({"organization_urn": urn})
+    response["host_mutations"] = [
+        host_mutation(
+            "project_connection_config_compare_and_set",
+            {
+                "connection_id": connection["connection_id"],
+                "expect": [{"path": "organization_urn", "state": "absent_or_equals", "value": urn}],
+                "set": {"organization_urn": urn},
+            },
+        )
+    ]
+    return response
+
+
+def resolve_connection(payload: dict[str, Any], inputs: dict[str, Any]) -> Connection:
+    connection = _selected_connection(payload, inputs)
     config = connection.get("config")
     if not isinstance(config, dict):
         raise LinkedInError("invalid_connection", "LinkedIn connection configuration is missing")

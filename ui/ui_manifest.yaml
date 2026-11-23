@@ -5,6 +5,9 @@
       "ref": "pages/setup.yaml"
     },
     {
+      "ref": "pages/page_author.yaml"
+    },
+    {
       "ref": "pages/support.yaml"
     }
   ]

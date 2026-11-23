@@ -51,14 +51,12 @@
       "config_schema": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "organization_urn"
-        ],
         "properties": {
           "organization_urn": {
             "type": "string",
             "minLength": 21,
-            "maxLength": 100,
+            "maxLength": 51,
+            "pattern": "^urn:li:organization:[1-9][0-9]{0,30}(?![\\s\\S])",
             "title": "Organization URN",
             "description": "Enter urn:li:organization:<numeric ID>. Page role is checked by LinkedIn when publishing."
           }
