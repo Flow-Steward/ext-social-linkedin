@@ -64,6 +64,44 @@ def test_catalog_install_validation_inherits_the_bundle_oauth_contract(monkeypat
     }
 
 
+def test_each_oauth_provider_can_start_from_its_setup_page(monkeypatch):
+    """The Connect panel exists only for a setup page that declares a connection_form.
+
+    1.0.4 installed, but the setup page had no connection_form, so the host showed
+    only the app configuration and the member or Page account could not be
+    connected from the UI. The host's own authorization check rejects a return
+    page that does not declare the form for the provider, connection type and intent.
+    """
+    monkeypatch.syspath_prepend("/app")
+    from core.application.extensions.descriptor_bundle_runtime import (
+        descriptor_with_bundle_runtime,
+    )
+    from core.application.extensions.lifecycle import validate_extension_descriptor_file
+    from core.application.extensions.oauth_authorization import OAuthAuthorizationService
+
+    path = ROOT / "extension-descriptor.yaml"
+    result = validate_extension_descriptor_file(path)
+    assert result["valid"] is True, result["errors"]
+    merged, errors = descriptor_with_bundle_runtime(
+        descriptor_path=path, normalized_descriptor=result["normalized"]
+    )
+    assert errors == []
+    for provider in merged["oauth_providers"]:
+        connection_type = next(
+            row["connection_type_id"]
+            for row in merged["connection_types"]
+            if row["auth"]["provider_id"] == provider["provider_id"]
+        )
+        intent_id = provider["authorization_intents"][0]["intent_id"]
+        assert OAuthAuthorizationService._return_page_owns_intent(
+            merged,
+            page_id=provider["setup_page_id"],
+            provider_id=provider["provider_id"],
+            connection_type=connection_type,
+            intent_id=intent_id,
+        ), provider["provider_id"]
+
+
 @pytest.mark.parametrize("name", ["publish_prepared_post.yaml", "publish_image.yaml"])
 def test_workflow_example_has_valid_native_graph(monkeypatch, name):
     monkeypatch.syspath_prepend("/app")

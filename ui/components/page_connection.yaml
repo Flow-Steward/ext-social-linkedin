@@ -1,0 +1,10 @@
+{
+  "component_id": "linkedin_page_connection",
+  "type": "connection_form",
+  "title": "LinkedIn page",
+  "data": {
+    "oauth_provider_id": "linkedin_page_oauth",
+    "connection_type": "linkedin_page",
+    "oauth_intent": "connect"
+  }
+}

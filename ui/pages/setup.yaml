@@ -3,6 +3,12 @@
   "title": "LinkedIn Publisher setup",
   "components": [
     {
+      "ref": "../components/member_connection.yaml"
+    },
+    {
+      "ref": "../components/page_connection.yaml"
+    },
+    {
       "ref": "../components/setup.yaml"
     }
   ]
